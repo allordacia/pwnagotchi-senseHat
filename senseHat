@@ -1,0 +1,73 @@
+import logging
+import json
+import os
+import pwnagotchi.plugins as plugins
+from sense_hat import SenseHat
+import pwnagotchi.ui.faces as faces
+
+
+class SENSE(plugins.Plugin):
+    __author__ = 'allordacia@gmail.com'
+    __version__ = '1.0.0'
+    __license__ = 'GPL3'
+    __description__ = 'SenseHat plugin'
+
+
+    def __init__(self):
+        self.running = False
+
+    def on_loaded(self):
+        self.sense = SenseHat()
+        self.sense.clear()
+        self.sense.set_imu_config(True, True, True)
+        self.sense.set_rotation(180)
+        self.sense.set_imu_enabled(True)
+        # self.sense.set_low_light(True)
+
+    def on_ready(self, agent):
+        self.running = True
+        self.sense.clear()
+        self.sense.set_pixels(faces.HAPPY)
+
+    def on_message(self, agent, message):
+        if self.running:
+            self.sense.show_message(message['text'], scroll_speed=0.1)
+
+    def on_idle(self, agent):
+        if self.running:
+            self.sense.clear()
+            self.sense.set_pixels(faces.SLEEPY)
+
+    def on_exit(self, agent):    
+        self.running = False
+        self.sense.clear()
+        self.sense.set_pixels(faces.SAD)
+
+    def on_handshake(self, agent, message):
+        if self.running:
+            self.sense.clear()
+            self.sense.set_pixels(faces.HAPPY)
+
+    def on_sad(self, agent):
+        if self.running:
+            self.sense.clear()
+            self.sense.set_pixels(faces.SAD)
+    
+    def on_happy(self, agent):
+        if self.running:
+            self.sense.clear()
+            self.sense.set_pixels(faces.HAPPY)
+
+    def on_sleepy(self, agent):
+        if self.running:
+            self.sense.clear()
+            self.sense.set_pixels(faces.SLEEPY)
+
+    
+
+
+
+
+
+
+
